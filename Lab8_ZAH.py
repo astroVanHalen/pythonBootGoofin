@@ -8,72 +8,78 @@
 ### 
 ###############################################################################
 
-state_names = ["Alabama", "Arkansas", "Arizona", "California", "Colorado", "Connecticut", 
-               "District of Columbia", "Delaware", "Florida", "Georgia", "Iowa", "Idaho", 
-               "Illinois", "Indiana", "Kansas", "Kentucky", "Louisiana", "Massachusetts", 
-               "Maryland", "Maine", "Michigan", "Minnesota", "Missouri", "Mississippi", 
-               "Montana", "North Carolina", "North Dakota", "Nebraska", "New Hampshire", 
-               "New Jersey", "New Mexico", "Nevada", "New York", "Ohio", "Oklahoma", 
-               "Oregon", "Pennsylvania", "Rhode Island", "South Carolina", "South Dakota", 
-               "Tennessee", "Texas", "Utah", "Virginia", "Vermont", "Washington", "Wisconsin", 
-               "West Virginia", "Wyoming"]
+def get_state_code(radio_sign):
+   '''
+   This function looks through the call sign for any character that can be converted to an integer.
+   This will tell us the state code identifier.
+   '''
+   for i in radio_sign:
+       isInt = True
+       try:
+          state_code = int(i)
+       except ValueError:
+          pass
+   return state_code
 
 
-######################################################################################
+def get_state(state_code):
+   '''
+   This function creates a dictionary with region codes as keys and states as values.
+   The state code is passed in and checked against the keys and returns the value.
+   '''
+   state_dict = {
+   '1': ['Connecticut', 'Maine', 'Massachusetts', 'New Hampshire', 'Rhode Island', 'Vermont'],
+   '2': ['New Jersey', 'New York'],
+   '3': ['Delaware', 'District of Columbia', 'Maryland', 'Pennsylvania'],
+   '4': ['Alabama', 'Florida', 'Georgia', 'Kentucky', 'North Carolina', 'South Carolina', 'Tennessee', 'Virginia'],
+   '5': ['Arkansas', 'Louisiana', 'Mississippi', 'New Mexico', 'Oklahoma', 'Texas'],
+   '6': ['California'],
+   '7': ['Arizona', 'Idaho', 'Montana', 'Nevada', 'Oregon', 'Utah', 'Washington', 'Wyoming'],
+   '8': ['Michigan', 'Ohio', 'West Virginia'],
+   '9': ['Illinois', 'Indiana', 'Wisconsin'],
+   '0': ['Colorado', 'Iowa', 'Kansas', 'Minnesota', 'Missouri', 'Nebraska', 'North Dakota', 'South Dakota'],
+   }
+   for k, v in state_dict.items():
+      if k == state_code:
+         state = v
+      else:
+         pass
+   return state
+
+
+def get_license(radio_sign, state_code):
+   '''
+   This function checks the index of the state code within the radio sign.
+   This gives us an index to use when slicing the list into a prefix and suffix.
+   Then, by checking the length of the prefix and suffix, and the letter combinations,
+   a license class is determined.
+   '''
+   slice_index = radio_sign.index(state_code)
+   prefix = radio_sign[:slice_index]
+   suffix = radio_sign[(slice_index + 1):]
+   if len(prefix) == 2 and len(suffix) == 3:
+      radio_class = "Group D"
+
+   elif len(prefix) == 1 and len(suffix) == 3:
+      radio_class = "Group C"
+
+   elif len(prefix) == 2 and len(suffix) == 2:
+      if prefix[0] == "A":
+         radio_class = "Group A"
+      else:
+         radio_class = "Group B"
+   else:
+         radio_class = "Group A"
+   return radio_class
+
+
+
 user_radio = input('\nEnter your call sign: ')
 radio_sign = list(user_radio)
-print(radio_sign)
-radio_sign2 = []
-sign_index = 0
-slice_index = 0
-radio_class = '0'
+state_code = str(get_state_code(radio_sign))
+state_list = get_state(state_code)
+state =  ', '.join(state_list)
+radio_class = get_license(radio_sign, state_code)
 
-for i in radio_sign:
-    isInt = True
-    try:
-       int(i)
-    except ValueError:
-       isInt = False
-
-    if isInt:
-       x = int(i)
-       radio_sign2.append(x)
-    else:
-       radio_sign2.append(i)
-
-for i in radio_sign2:
-   if type(i) is int:
-      state_code = i
-   else:
-      pass
-   
-element = state_code
-slice_index = radio_sign2.index(element)
-
-print(radio_sign2)
-print(state_code)
-print(slice_index)
-
-prefix = radio_sign2[:slice_index]
-suffix = radio_sign2[(slice_index + 1):]
-
-print(prefix)
-print(suffix)
-######################################################################################
-
-######################################################################################
-if len(prefix) == 2 and len(suffix) == 3:
-   radio_class = "Group D"
-
-elif len(prefix) == 1 and len(suffix) == 3:
-   radio_class = "Group C"
-
-else:
-   len(prefix) == 2 and len(suffix) == 2
-   if prefix[0] == "A":
-      radio_class = "Group A"
-   else:
-      radio_class = "Group B"
-   
-print(radio_class)
+print(f'\nLicense Class: {radio_class}\nState(s) Issued: {state}')
 ######################################################################################
