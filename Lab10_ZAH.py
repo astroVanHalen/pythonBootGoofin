@@ -39,7 +39,7 @@ def biggest2(x,y,z):
 # Define the NumFileGen with 2 parameters
 ##############################################################
 def NumFileGen(name,directory,number):
-        '''
+    '''
     Uses the random.randrange() function to generate a list of 
     integers between 1-100.  The number of integers in the list
     is defined as an argument.
@@ -50,7 +50,6 @@ def NumFileGen(name,directory,number):
     Example:
         NumFileGen(Spam.py, /foo/bar, 42)
     '''
-
     try:                                                      # Try/Except tests for valid directory for output
         os.chdir(directory)
         if os.path.isfile('./'+ name):                        # Added conditional to check if file exists  
@@ -71,6 +70,20 @@ def NumFileGen(name,directory,number):
 ##############################################################
 # Define the NumFile_Gen_safe with two parameters
 ##############################################################
+    '''
+    Uses the random.randrange() function to generate a list of 
+    integers between 1-100.  The number of integers in the list
+    is defined as an argument.
+    Parameters:
+        name(str): Name of file to be created
+        directory(str): the directory in which to store the file
+        number(int): Number of random integers in list
+    Example:
+        NumFileGen(Spam.py, /foo/bar, 42)
+
+        THIS IS AN UPDATED VERSION OF numFileGen  AS THIS VALIDATES
+        USER INPUT AND CHECKS IF THE FILE ALREADY EXISTS.
+    '''
 def NumFile_Gen_safe(name,directory,number):
     try:
         os.chdir(directory)
@@ -86,8 +99,11 @@ def NumFile_Gen_safe(name,directory,number):
                             file.write(f'{random_number},')
                         else:
                             file.write(str(random_number))
-            else:
+            elif overwrite.lower() == 'no':
                 print('As you wish.')
+            else:
+                print('Invalid entry')
+                
         else:
             with open(file_path, 'w') as file:
                 for i in range(1, number):
