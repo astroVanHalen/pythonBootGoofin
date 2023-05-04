@@ -1,10 +1,11 @@
 ##################################################
-###	Title   - Lab 12
+###	Title   - Lab 3
 ###	Author – Zac Huron
-###	Date – 2023 04 16
+###	Date – 2023 05 01
 ###	Description – Build GUI for connecting to Network
 ### Devices
 ##################################################  
+
 
 from netmiko import ConnectHandler as connect
 import ipaddress
@@ -20,7 +21,7 @@ device = {
 def configure_device():
     '''
     This function asks for user input to specify the device to be configured
-    '''
+    '''   
     while True:
         device = input("Which device do you want to configure? (Edge-sw01, Dist-sw01, Dist-sw02) ")
         if device in ['Edge-sw01', 'Dist-sw01', 'Dist-sw02']:
@@ -42,7 +43,8 @@ def set_vlan_ip():
         vlan number
         SSH IP address
 
-    '''
+    '''    
+
     while True:
         vlan_ip = input("Enter the IP address in x.x.x.x/yy format: ")
         ssh_address = ipaddress.IPv4Address('10.10.20.172')
@@ -69,6 +71,26 @@ def set_vlan_ip():
         break
 
 
+def execute_commands_from_file():
+    '''
+    This is the function to open a Cisco Command txt file and asks
+    user which command they wish to input.
+    '''
+
+    with open('cisco_commands.txt', 'r') as f:
+        config_commands = f.read()
+        print("Contents of cisco_commands.txt:\n\n" + config_commands)
+    while True:
+        command = input("Enter the command you wish to send: ")
+        if not command:
+            continue
+        if command.lower() == "exit":
+            print("Exiting command mode")
+            break
+        output = net_connect.send_command(command)
+        print(output)
+
+
 # Establish SSH connection to the device
 # NOTE switch must also be configured for SSH connection
 
@@ -80,12 +102,15 @@ with connect(**device) as net_connect:
 
 
    # Set up for CLI menu     
-   # \n keeps it neat by starting with a CR|LF     
+   # \n keeps it neat by starting with a CR|LF
+   # NOTE There are still four options in this menu, but only three are used.
+   # Has not been tested in devnet environment
+   
     while True:
         print("\nSelect an option:")
         print("1. Configure a device")
         print("2. Set an IP address on a VLAN")
-        print("3. Do nothing")
+        print("3. Execute commands from file")
         print("4. Do nothing")
     
         choice = input("Enter your choice: ")
@@ -94,7 +119,9 @@ with connect(**device) as net_connect:
             configure_device()
         elif choice == '2':
             set_vlan_ip()
-        elif choice == '3' or choice == '4':
+        elif choice == '3':
+            execute_commands_from_file()
+        elif choice == '4':
             pass
         else:
             print("Invalid choice")
